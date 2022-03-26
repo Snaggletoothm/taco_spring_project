@@ -4,11 +4,14 @@ package com.tacocloud.tacocloud.controller;
 import com.tacocloud.tacocloud.domain.TacoOrder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
+
+import javax.validation.Valid;
 
 @Slf4j
 @Controller
@@ -21,7 +24,12 @@ public class OrderController {
     }
 
     @PostMapping
-    public String processOrder(TacoOrder order, SessionStatus sessionStatus) {
+    public String processOrder(@Valid TacoOrder order,
+                               SessionStatus sessionStatus,
+                               Errors errors) {
+        if (errors.hasErrors()) {
+            return "orderForm";
+        }
         log.info("OrderSubmitted: {}", order);
         sessionStatus.setComplete();
         return "redirect:/";
