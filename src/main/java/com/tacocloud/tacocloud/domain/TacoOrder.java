@@ -6,12 +6,17 @@ import org.hibernate.validator.constraints.CreditCardNumber;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Data
 public class TacoOrder {
+    @NotNull
+    private Long id;
+    private Date placedAt = new Date();
     @NotBlank(message="Delivery name is required")
     private String deliveryName;
     @NotBlank(message="Street is required")

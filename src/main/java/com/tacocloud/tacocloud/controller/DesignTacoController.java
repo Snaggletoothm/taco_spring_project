@@ -1,29 +1,41 @@
 package com.tacocloud.tacocloud.controller;
 
 
+import com.tacocloud.tacocloud.data.IngredientRepository;
 import com.tacocloud.tacocloud.domain.Ingredient;
 import com.tacocloud.tacocloud.domain.Taco;
 import com.tacocloud.tacocloud.domain.TacoOrder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.tacocloud.tacocloud.domain.Ingredient.Type;
-import static com.tacocloud.tacocloud.domain.Ingredient.ingredients;
 
 @Slf4j
 @Controller
 @RequestMapping("/design")
 @SessionAttributes("tacoOrder")
 public class DesignTacoController {
+    private IngredientRepository repository;
+
+    @Autowired
+    public DesignTacoController(IngredientRepository repository) {
+        this.repository = repository;
+    }
+
     @ModelAttribute
     public void addIngredientsToModel(Model model) {
+        List<Ingredient> ingredients = new ArrayList<>();
+        repository.findAll().forEach(ingredients::add);
+
         Type[] types = Type.values();
         for (Type type : types) {
             model.addAttribute(
@@ -50,9 +62,8 @@ public class DesignTacoController {
     }
 
     @PostMapping
-    public String processTaco(@Valid Taco taco,
-                              @ModelAttribute TacoOrder tacoOrder,
-                              Errors errors) {
+    public String processTaco(@Valid Taco taco, Errors errors,
+                              @ModelAttribute TacoOrder tacoOrder) {
         if (errors.hasErrors()) {
             return "design";
         }
